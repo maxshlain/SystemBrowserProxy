@@ -8,21 +8,21 @@ public partial class MainPage : ContentPage
 {
     private readonly ICommandLineArgumentsProvider _commandLineArgumentsProvider;
     private readonly IBrowserRouter _browserRouter;
-    
+
     private int count = 0;
 
-    public MainPage()
+    public MainPage(ICommandLineArgumentsProvider provider, IBrowserRouter router)
     {
-        _commandLineArgumentsProvider = new CommandLineArgumentsProvider();
-        _browserRouter = new BrowserRouter();
-        
+        _commandLineArgumentsProvider = provider;
+        _browserRouter = router;
+
         InitializeComponent();
-        CentralBanner.Text = GetCentralBannerText(); 
+        CentralBanner.Text = GetCentralBannerText();
     }
 
     private string GetCentralBannerText()
     {
-        Debugger.Launch();
+        // Debugger.Launch();
         var args = _commandLineArgumentsProvider.GetCommandLineArguments();
         var url = _browserRouter.OpenBrowser(args);
         url = string.IsNullOrEmpty(url) ? "null" : url;
