@@ -1,29 +1,33 @@
 ﻿using Serilog;
 using System.Diagnostics;
+using SystemBrowserProxy2.Core;
 
 namespace SystemBrowserProxy2;
 
 public partial class MainPage : ContentPage
 {
-    int count = 0;
+    private readonly ICommandLineArgumentsProvider _commandLineArgumentsProvider;
+    private readonly IBrowserRouter _browserRouter;
+    
+    private int count = 0;
 
     public MainPage()
     {
+        _commandLineArgumentsProvider = new CommandLineArgumentsProvider();
+        _browserRouter = new BrowserRouter();
+        
         InitializeComponent();
         CentralBanner.Text = GetCentralBannerText(); 
     }
 
     private string GetCentralBannerText()
     {
-        //Debugger.Launch();
-        var args = Environment.GetCommandLineArgs();
-        string secondOrNull = args?.ElementAtOrDefault(1);
-        var path = @"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe";
-        Process.Start(path, secondOrNull);
-        string message = $"Starting msedge to ${secondOrNull}";
-        //Environment.Exit(0);
-        var bannerText = secondOrNull ?? "From Code Behind1";
-        Serilog.Log.Information("{bannerText}", bannerText);
+        Debugger.Launch();
+        var args = _commandLineArgumentsProvider.GetCommandLineArguments();
+        var url = _browserRouter.OpenBrowser(args);
+        url = string.IsNullOrEmpty(url) ? "null" : url;
+        string bannerText = $"Starting msedge to {url}";
+        Log.Information("{bannerText}", bannerText);
         return bannerText;
     }
 
@@ -36,16 +40,7 @@ public partial class MainPage : ContentPage
         else
             CounterBtn.Text = $"Clicked {count} times";
 
-        Log.Logger.Information("counter: {counter}", count);
+        Log.Information("counter: {counter}", count);
         SemanticScreenReader.Announce(CounterBtn.Text);
-    }
-}
-
-public class CommandLineArgumentsProvider
-{
-    public static string[] GetCommandLineArguments()
-    {
-        var args = Environment.GetCommandLineArgs();
-        return args?.ToArray() ?? new string[0];
     }
 }
