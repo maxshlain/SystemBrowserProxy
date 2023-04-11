@@ -10,21 +10,12 @@ public interface IBrowserRouter
 
 public class BrowserRouter : IBrowserRouter
 {
-    private readonly Dictionary<string, object> _rules;
+    private readonly Routes _routes;
 
-    private const string _msedge = @"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe";
-    private const string _chrome = @"C:\Program Files\Google\Chrome\Application\chrome.exe";
-
-    public BrowserRouter()
+    public BrowserRouter(Routes routes)
     {
-        _rules = new Dictionary<string, object>
-        {
-            ["bing"] = new[] { _msedge, },
-            ["google"] = new[] { _chrome },
-            ["ynet"] = new[] { _chrome, "--incognito" }
-        };
+        _routes = routes;
     }
-
 
     public string OpenBrowser(string[] commandLineArgs)
     {
@@ -46,56 +37,35 @@ public class BrowserRouter : IBrowserRouter
         var url = commandLineArgs[1];
         Log.Information("url: {url}", url);
 
-        if (TryOpenUrl(url))
-        {
-            return url;
-        }
-
-        StartProcess(_msedge, new List<string> { url });
+        TryOpenUrl(url);
         return url;
     }
 
-    private bool TryOpenUrl(string url)
+    private void TryOpenUrl(string url)
     {
-        foreach (var rule in _rules)
+        foreach (var rule in _routes.Rules)
         {
-            if (url.Contains(rule.Key))
+            if (!url.Contains(rule.Key))
             {
-                var details = rule.Value as string[]
-                              ?? throw new Exception("rule.Value is not a string[]");
-
-                string processName = details[0]
-                                     ?? throw new Exception("details[0] is null");
-
-                List<string> argumentsList = new List<string>();
-
-                if (details.Length > 1)
-                {
-                    argumentsList.Add(details[1]);
-                }
-
-                argumentsList.Add(url);
-
-                StartProcess(processName, argumentsList);
-                return true;
+                continue;
             }
+
+            StartProcess(rule.Value.Path, new List<string> { rule.Value.Args, url });
+            return;
         }
 
-        return false;
+        StartProcess(_routes.Default.Path, new List<string> { _routes.Default.Args, url });
     }
 
     private void StartProcess(string processName, List<string> arguments)
     {
         try
         {
+            arguments = arguments.Where(x => !string.IsNullOrEmpty(x)).ToList();
             Process.Start(processName, arguments);
         }
         catch (Exception e)
         {
-            var argumentsText = "";
-            argumentsText = arguments == null ? "null" : argumentsText;
-            argumentsText = !arguments.Any() ? "empty" : argumentsText;
-
             Log.Error(e, "Failed to start process {processName} with arguments {arguments}",
                 processName, ArgumentsToText(arguments));
         }

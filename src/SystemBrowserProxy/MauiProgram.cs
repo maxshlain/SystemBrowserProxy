@@ -1,6 +1,8 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Events;
+using System.Diagnostics;
 using SystemBrowserProxy2.Core;
 
 namespace SystemBrowserProxy2;
@@ -28,6 +30,12 @@ public static class MauiProgram
 
     private static MauiApp CreateMauiAppImpl()
     {
+        IConfiguration config = new ConfigurationBuilder()
+            .AddJsonFile("appsettings.json")
+            .Build();
+
+        var routes = config.GetRequiredSection("Routes").Get<Routes>();
+
         MauiAppBuilder builder = MauiApp.CreateBuilder();
         builder
             .UseMauiApp<App>()
@@ -49,6 +57,7 @@ public static class MauiProgram
 
         builder.Services.AddSingleton<ICommandLineArgumentsProvider, CommandLineArgumentsProvider>();
         builder.Services.AddSingleton<IBrowserRouter, BrowserRouter>();
+        builder.Services.AddSingleton(routes);
 
         return builder.Build();
     }
