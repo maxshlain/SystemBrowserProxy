@@ -1,5 +1,6 @@
 ﻿using Serilog;
 using System.Diagnostics;
+using Microsoft.Toolkit.Uwp.Notifications;
 using SystemBrowserProxy2.Core;
 
 namespace SystemBrowserProxy2;
@@ -28,7 +29,13 @@ public partial class MainPage : ContentPage
         url = string.IsNullOrEmpty(url) ? "null" : url;
         string bannerText = $"Starting msedge to {url}";
         Log.Information("{bannerText}", bannerText);
-        return bannerText;
+
+        new ToastContentBuilder()
+            .AddText("Route completed")
+            .AddText($"URL: {url}")
+            .Show();
+
+        return "";
     }
 
     private void OnCounterClicked(object sender, EventArgs e)
