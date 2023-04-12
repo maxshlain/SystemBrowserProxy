@@ -2,8 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Events;
-using System.Diagnostics;
-using SystemBrowserProxy2.Core;
+using SystemBrowserProxy.Core;
 
 namespace SystemBrowserProxy2;
 
@@ -57,6 +56,7 @@ public static class MauiProgram
 
         builder.Services.AddSingleton<ICommandLineArgumentsProvider, CommandLineArgumentsProvider>();
         builder.Services.AddSingleton<IBrowserRouter, BrowserRouter>();
+        builder.Services.AddSingleton<IProcessStarter, ProcessStarter>();
         builder.Services.AddSingleton(routes);
 
         return builder.Build();

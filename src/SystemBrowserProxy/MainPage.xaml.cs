@@ -1,7 +1,6 @@
 ﻿using Serilog;
-using System.Diagnostics;
 using Microsoft.Toolkit.Uwp.Notifications;
-using SystemBrowserProxy2.Core;
+using SystemBrowserProxy.Core;
 
 namespace SystemBrowserProxy2;
 

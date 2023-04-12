@@ -1,4 +1,4 @@
-﻿namespace SystemBrowserProxy2.Core;
+﻿namespace SystemBrowserProxy.Core;
 
 public interface ICommandLineArgumentsProvider
 {
