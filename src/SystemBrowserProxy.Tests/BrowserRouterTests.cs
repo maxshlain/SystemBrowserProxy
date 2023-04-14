@@ -1,5 +1,4 @@
-﻿using FluentAssertions;
-using NSubstitute;
+﻿using NSubstitute;
 using SystemBrowserProxy.Core;
 
 namespace SystemBrowserProxy.Tests;
@@ -7,13 +6,36 @@ namespace SystemBrowserProxy.Tests;
 public class BrowserRouterTests
 {
     [Fact]
-    public void Test1()
+    public void WillOpenBingExecutableForBingUrl()
     {
+        var starter = Substitute.For<IProcessStarter>();
         var router = new BrowserRouter(
-            new Routes(),
-            Substitute.For<IProcessStarter>()
+            RouterTestFixtures.Routes,
+            starter
         );
 
-        router.Should().NotBeNull();
+        router.OpenBrowser(new[] { "test.exe", "http://www.bing.com" });
+
+        starter.Received(1).StartProcess(
+            RouterTestFixtures.Routes.Rules["bing"].Path,
+            Arg.Is<List<string>>(x => x.Any(y => y == "http://www.bing.com"))
+        );
+    }
+
+    [Fact]
+    public void WillOpenChromeExecutableForGoogleUrl()
+    {
+        var starter = Substitute.For<IProcessStarter>();
+        var router = new BrowserRouter(
+            RouterTestFixtures.Routes,
+            starter
+        );
+
+        router.OpenBrowser(new[] { "test.exe", "http://www.google.com" });
+
+        starter.Received(1).StartProcess(
+            RouterTestFixtures.Routes.Rules["google"].Path,
+            Arg.Is<List<string>>(x => x.Any(y => y == "http://www.google.com"))
+        );
     }
 }
