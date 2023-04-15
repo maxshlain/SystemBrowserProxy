@@ -4,7 +4,7 @@ namespace SystemBrowserProxy.Core;
 
 public interface IBrowserRouter
 {
-    string OpenBrowser(string[] commandLineArgs);
+    RouteConfig OpenBrowser(string[] commandLineArgs);
 }
 
 public class BrowserRouter : IBrowserRouter
@@ -18,12 +18,12 @@ public class BrowserRouter : IBrowserRouter
         _processStarter = processStarter;
     }
 
-    public string OpenBrowser(string[] commandLineArgs)
+    public RouteConfig OpenBrowser(string[] commandLineArgs)
     {
         if (!commandLineArgs.Any())
         {
             Log.Warning("Command line arguments are empty");
-            return "";
+            throw new Exception("Command line arguments are empty");
         }
 
         var processName = commandLineArgs[0];
@@ -31,15 +31,14 @@ public class BrowserRouter : IBrowserRouter
 
         if (commandLineArgs.Length < 2)
         {
-            Log.Warning("no second argument");
-            return "";
+            Log.Warning("No url parameter provided");
+            throw new Exception("No url parameter provided");
         }
 
         var url = commandLineArgs[1];
         Log.Information("url: {url}", url);
 
-        var route = TryOpenUrl(url);
-        return "route";
+        return TryOpenUrl(url);
     }
 
     private RouteConfig TryOpenUrl(string url)

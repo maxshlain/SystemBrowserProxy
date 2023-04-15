@@ -23,18 +23,26 @@ public partial class MainPage : ContentPage
     private string GetCentralBannerText()
     {
         // Debugger.Launch();
-        var args = _commandLineArgumentsProvider.GetCommandLineArguments();
-        var url = _browserRouter.OpenBrowser(args);
-        url = string.IsNullOrEmpty(url) ? "null" : url;
-        string bannerText = $"Starting msedge to {url}";
-        Log.Information("{bannerText}", bannerText);
+        string bannerText = "";
 
+        try
+        {
+            var args = _commandLineArgumentsProvider.GetCommandLineArguments();
+            var routeConfig = _browserRouter.OpenBrowser(args);
+            bannerText = $"Starting {routeConfig.Name}";
+            Log.Information("{bannerText}", bannerText);
+        }
+        catch (Exception e)
+        {
+            bannerText = e.Message;
+        }
+        
         new ToastContentBuilder()
             .AddText("Route completed")
-            .AddText($"URL: {url}")
+            .AddText(bannerText)
             .Show();
-
-        return "";
+        
+        return bannerText;
     }
 
     private void OnCounterClicked(object sender, EventArgs e)
