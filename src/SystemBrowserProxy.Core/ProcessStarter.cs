@@ -6,6 +6,7 @@ namespace SystemBrowserProxy.Core;
 public interface IProcessStarter
 {
     void StartProcess(string processName, List<string> arguments);
+    void OpenConfig(string editor);
 }
 
 public class ProcessStarter : IProcessStarter
@@ -22,6 +23,12 @@ public class ProcessStarter : IProcessStarter
             Log.Error(e, "Failed to start process {processName} with arguments {arguments}",
                 processName, ArgumentsToText(arguments));
         }
+    }
+
+    public void OpenConfig(string editor)
+    {
+        var configPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "appsettings.json");
+        Process.Start(editor, new[] { configPath });
     }
 
     private static string ArgumentsToText(List<string> arguments)

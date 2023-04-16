@@ -49,10 +49,7 @@ public static class MauiProgram
 #endif
 
         builder.Logging.AddSerilog(dispose: true);
-
-        builder.Services.AddTransient<AppShell>();
         builder.Services.AddSingleton<App>();
-        builder.Services.AddSingleton<MainPage>();
 
         builder.Services.AddSingleton<ICommandLineArgumentsProvider, CommandLineArgumentsProvider>();
         builder.Services.AddSingleton<IBrowserRouter, BrowserRouter>();

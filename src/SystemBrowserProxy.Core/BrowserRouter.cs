@@ -32,6 +32,7 @@ public class BrowserRouter : IBrowserRouter
         if (commandLineArgs.Length < 2)
         {
             Log.Warning("No url parameter provided");
+            _processStarter.OpenConfig(_routes.Editor);
             throw new Exception("No url parameter provided");
         }
 
