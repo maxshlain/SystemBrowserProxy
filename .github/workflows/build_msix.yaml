@@ -1,0 +1,26 @@
+name: Build MSIX
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup MSIX Packaging Tool
+      uses: microsoft/setup-msix-packaging-tool@v1
+
+    - name: Build MSIX
+      run: |
+        msbuild /t:Package /p:Configuration=Release /p:AppxBundlePlatforms="x86|x64|arm|arm64" /p:AppxBundle=Always .\src\SystemBrowserProxy\SystemBrowserProxy.csproj
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: msix-package
+        path: ./AppPackages/*.msix  # adjust this path to where your .msix files are located
